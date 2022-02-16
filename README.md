@@ -1,4 +1,7 @@
 # Tile-Matcher-Roll-Like
+Example of Tile-Matcher -> Candy Crush
+
+Roll -> https://store.steampowered.com/app/1585910/Roll/
 ## Tiles
 The tiles will be objects that vary in lifespan – for example an apple for a short lifespan, a diamond for a long one. Matching tiles counts as one turn
 ## Points
