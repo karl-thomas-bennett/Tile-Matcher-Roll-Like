@@ -236,8 +236,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53d55e6d7fc745848a6ffb2f29611c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 10
-  tileSize: 0.5
+  size: 9
+  tileSize: 0.7
+  boarderWidth: 0.05
   tilePool:
   - {fileID: 1613853808407326922, guid: be940b1ab4ae3734ab7a123efdefe28e, type: 3}
   - {fileID: 1613853808407326922, guid: 8d63269b8c7ccd7449333b7eb3a3840c, type: 3}
@@ -246,8 +247,8 @@ MonoBehaviour:
   - {fileID: 1613853808407326922, guid: b5f0120640e85e749a0703f13465f4c0, type: 3}
   square: {fileID: 7469514704062431869, guid: c5aa35f4a0cdf434caa202d2f38fb8aa, type: 3}
   group: {fileID: 6200649235628241487, guid: d0aa0105bf56fe445ac9603920e78f41, type: 3}
-  borderColour: {r: 0.3679245, g: 0.16268875, b: 0.029503385, a: 0}
-  coverColour: {r: 0.9339623, g: 0.5510645, b: 0.18943575, a: 0}
+  borderColour: {r: 0.3679245, g: 0.16268875, b: 0.029503385, a: 1}
+  coverColour: {r: 0.9339623, g: 0.5510645, b: 0.18943575, a: 1}
 --- !u!4 &1873394853
 Transform:
   m_ObjectHideFlags: 0
