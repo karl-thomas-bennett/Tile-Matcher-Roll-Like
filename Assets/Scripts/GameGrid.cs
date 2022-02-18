@@ -7,7 +7,15 @@ public class GameGrid : MonoBehaviour
     public int size;
     public float tileSize;
     public List<GameObject> tilePool;
+    public GameObject square;
+    public GameObject group;
+    public Color borderColour;
+    public Color coverColour;
     private GridData data;
+    private GameObject topCover;
+    private GameObject rightCover;
+    private GameObject bottomCover;
+    private GameObject leftCover;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,7 +30,8 @@ public class GameGrid : MonoBehaviour
         {
             for(int j = 0; j < data.rows[i].Count; j++)
             {
-                Instantiate(tilePool[data.rows[i][j]], new Vector3(-5 + j, i), Quaternion.identity, transform);
+                GameObject tile = Instantiate(tilePool[data.rows[i][j]], new Vector3(tileSize*(j - 4.5f - size/2), tileSize*(i + 0.5f - size/2)), Quaternion.identity, transform);
+                tile.transform.localScale = new Vector3(tileSize, tileSize);
             }
         }
         for (int i = 0; i < data.columns.Count; i++)
@@ -31,10 +40,26 @@ public class GameGrid : MonoBehaviour
             {
                 if(j < 5 || j >= 5 + size)
                 {
-                    Instantiate(tilePool[data.columns[i][j]], new Vector3(i, j-5), Quaternion.identity, transform);
+                    GameObject tile = Instantiate(tilePool[data.columns[i][j]], new Vector3(tileSize*(i + 0.5f- size/2), tileSize*(j-4.5f - size/2)), Quaternion.identity, transform);
+                    tile.transform.localScale = new Vector3(tileSize, tileSize);
                 }
             }
         }
+    }
+
+    public void AddCovers()
+    {
+        topCover = Instantiate(group, transform);
+        GameObject boarder = Instantiate(square, new Vector3(), Quaternion.identity, topCover.transform);
+        boarder.transform.localScale = new Vector3(size*tileSize, 0.05f);
+        boarder.GetComponent<SpriteRenderer>().color = borderColour;
+        GameObject cover = Instantiate(square, new Vector3(0, 5), Quaternion.identity, topCover.transform);
+        cover.transform.localScale = new Vector3();
+        cover.GetComponent<SpriteRenderer>().color = coverColour;
+    }
+
+    public void RemoveCovers()
+    {
 
     }
 
