@@ -19,6 +19,7 @@ public class GameGrid : MonoBehaviour
     private GameObject bottomCover;
     private GameObject leftCover;
     private GameObject tiles;
+    private float time;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,11 +28,13 @@ public class GameGrid : MonoBehaviour
         data = new GridData(size, tilePool.Count, transform);
         AddCovers();
         UpdateGrid();
-        
+        DestroyAllTiles();
+        time = Time.time;
     }
 
     public void UpdateGrid()
     {
+        
         //Create Tiles based on GridData
         for(int i = 0; i < data.rows.Count; i++)
         {
@@ -51,6 +54,14 @@ public class GameGrid : MonoBehaviour
                     tile.transform.localScale = new Vector3(tileSize, tileSize);
                 }
             }
+        }
+    }
+
+    public void DestroyAllTiles()
+    {
+        for (int i = 0; i < tiles.transform.childCount; i++)
+        {
+            Destroy(tiles.transform.GetChild(0).gameObject);
         }
     }
 
@@ -142,9 +153,10 @@ public class GameGrid : MonoBehaviour
 
     }
 
+
+
     // Update is called once per frame
     void Update()
     {
-        
     }
 }

@@ -6,6 +6,7 @@ public class GridData
 {
     public List<List<int>> columns;
     public List<List<int>> rows;
+    public List<List<int>> square;
     private int poolSize;
     private List<int> visibleColumnStarts;
     private List<int> visibleRowStarts;
@@ -19,10 +20,12 @@ public class GridData
         visibleRowStarts = new List<int>();
         columns = new List<List<int>>();
         rows = new List<List<int>>();
+        square = new List<List<int>>();
         this.poolSize = poolSize;
         this.buffer = buffer;
         SetGridSize(size);
         GenerateGrid();
+        RemoveMatches();
     }
 
 
@@ -50,6 +53,146 @@ public class GridData
 
     }
 
+    public void RemoveMatches()
+    {
+        List<Match> matches = FindMatches();
+        foreach (Match match in matches)
+        {
+            foreach (Vector2 tile in match.tiles)
+            {
+                SetTile((int)tile.x,(int)tile.y, NotNeighbour(tile));
+            }
+        }
+    }
+
+    public List<Vector2> GetNeighbours(Vector2 tile)
+    {
+        List<Vector2> neighbours = new List<Vector2>();
+        if(tile.y + 1 < size)
+        {
+            neighbours.Add(new Vector2(tile.x, tile.y + 1));
+        }
+        if (tile.y - 1 >= 0)
+        {
+            neighbours.Add(new Vector2(tile.x, tile.y - 1));
+        }
+        if (tile.x + 1 < size)
+        {
+            neighbours.Add(new Vector2(tile.x + 1, tile.y));
+        }
+        if (tile.x - 1 >= 0)
+        {
+            neighbours.Add(new Vector2(tile.x - 1, tile.y));
+        }
+        return neighbours;
+    }
+
+    public int NotNeighbour(Vector2 tile)
+    {
+        List<Vector2> neighbours = GetNeighbours(tile);
+        List<int> tileTypes = new List<int>();
+        for(int i = 0; i < poolSize; i++)
+        {
+            tileTypes.Add(i);
+        }
+        foreach(Vector2 n in neighbours)
+        {
+            tileTypes.Remove(square[(int)n.x][(int)n.y]);
+        }
+        return tileTypes[0];
+    }
+
+    public List<Match> FindMatches()
+    {
+        List<Match> matches = new List<Match>();
+        for(int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                bool verticalMatchFound = false;
+                bool horizontalMatchFound = false;
+                for (int k = 0; k < matches.Count; k++)
+                {
+                    if (matches[k].tiles.Contains(new Vector2(i, j)))
+                    {
+                        if (matches[k].vertical)
+                        {
+                            verticalMatchFound = true;
+                        }
+                        else
+                        {
+                            horizontalMatchFound = true;
+                        }
+                    }
+                }
+                //Debug.Log(verticalMatchFound + " " + horizontalMatchFound);
+                if (!verticalMatchFound)
+                {
+                    List<Vector2> tiles = new List<Vector2>();
+                    int l = j;
+                    Vector2 current = new Vector2(i, l);
+                    tiles.Add(current);
+                    l++;
+                    current = new Vector2(i, l);
+                    while (current.y < square.Count && square[(int)current.x][(int)current.y] == square[i][j])
+                    {
+                        tiles.Add(current);
+                        l++;
+                        current = new Vector2(i, l);
+                    }
+                    l = j - 1;
+                    current = new Vector2(i, l);
+                    while (current.y >= 0 && square[(int)current.x][(int)current.y] == square[i][j])
+                    {
+                        tiles.Add(current);
+                        l--;
+                        current = new Vector2(i, l);
+                    }
+                    if(tiles.Count > 2)
+                    {
+                        matches.Add(new Match(tiles, square[(int)tiles[0].x][(int)tiles[0].y]));
+                    }
+                        
+                }
+                if (!horizontalMatchFound)
+                {
+                    List<Vector2> tiles = new List<Vector2>();
+                    int l = i;
+                    Vector2 current = new Vector2(l, j);
+                    tiles.Add(current);
+                    l++;
+                    current = new Vector2(l, j);
+                    while (current.x < square.Count && square[(int)current.x][(int)current.y] == square[i][j])
+                    {
+                        tiles.Add(current);
+                        l++;
+                        current = new Vector2(l, j);
+                    }
+                    l = i - 1;
+                    current = new Vector2(l, j);
+                    while (current.x >= 0 && square[(int)current.x][(int)current.y] == square[i][j])
+                    {
+                        tiles.Add(current);
+                        l--;
+                        current = new Vector2(l, j);
+                    }
+                    if (tiles.Count > 2)
+                    {
+                        matches.Add(new Match(tiles, square[(int)tiles[0].x][(int)tiles[0].y]));
+                    }
+                }
+            }
+        }
+        return matches;
+    }
+
+    public void SetTile(int r, int c, int value)
+    {
+        square[r][c] = value;
+        rows[r][c + visibleRowStarts[r]] = value;
+        columns[c][r + visibleColumnStarts[c]] = value;
+    }
+
     public void SetGridSize(int size)
     {
         if(size != -1)
@@ -75,6 +218,7 @@ public class GridData
         }
         for (int i = 0; i < size; i++)
         {
+            square.Add(new List<int>());
             //Adding tiles to all rows
             for (int j = 0; j < size + 10; j++)
             {
@@ -84,6 +228,7 @@ public class GridData
                 if (j >= buffer && j < buffer + size)
                 {
                     columns[j - buffer].Add(tile);
+                    square[i].Add(tile);
                 }
 
             }
@@ -100,6 +245,19 @@ public class GridData
                     columns[i].Add(tile);
                 }
             }
+        }        
+    }
+    public override string ToString()
+    {
+        string output = "";
+        for(int i = size - 1; i >= 0; i--)
+        {
+            for(int j = 0; j < size; j++)
+            {
+                output += square[i][j];
+            }
+            output += "\n";
         }
+        return output;
     }
 }
