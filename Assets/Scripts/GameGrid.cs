@@ -7,11 +7,13 @@ public class GameGrid : MonoBehaviour
     public int size;
     public float tileSize;
     public float boarderWidth = 0.05f;
+    private readonly int sortingMax = 3;
     public List<GameObject> tilePool;
     public GameObject square;
     public GameObject group;
     public Color borderColour;
     public Color coverColour;
+    public Color highlightColour;
     private GridData data;
     private GameObject covers;
     private GameObject topCover;
@@ -19,24 +21,26 @@ public class GameGrid : MonoBehaviour
     private GameObject bottomCover;
     private GameObject leftCover;
     private GameObject tiles;
+    private GameObject highlights;
     private float time;
     // Start is called before the first frame update
     void Start()
     {
         tiles = Instantiate(group, Vector3.zero, Quaternion.identity, transform);
         tiles.name = "Tiles";
+        highlights = Instantiate(group, Vector3.zero, Quaternion.identity, transform);
+        highlights.name = "Highlights";
         data = new GridData(size, tilePool.Count, transform);
         AddCovers();
         UpdateGrid();
-        DestroyAllTiles();
         time = Time.time;
     }
 
     public void UpdateGrid()
     {
-        
+        DestroyAllTiles();
         //Create Tiles based on GridData
-        for(int i = 0; i < data.rows.Count; i++)
+        for (int i = 0; i < data.rows.Count; i++)
         {
             for(int j = 0; j < data.rows[i].Count; j++)
             {
@@ -59,10 +63,9 @@ public class GameGrid : MonoBehaviour
 
     public void DestroyAllTiles()
     {
-        for (int i = 0; i < tiles.transform.childCount; i++)
-        {
-            Destroy(tiles.transform.GetChild(0).gameObject);
-        }
+        Destroy(tiles);
+        tiles = Instantiate(group, Vector3.zero, Quaternion.identity, transform);
+        tiles.name = "Tiles";
     }
 
     public void AddCovers()
@@ -83,13 +86,13 @@ public class GameGrid : MonoBehaviour
         boarder.transform.localScale = new Vector3(size * tileSize + boarderWidth * 2, boarderWidth);
         SpriteRenderer boarderRenderer = boarder.GetComponent<SpriteRenderer>();
         boarderRenderer.color = borderColour;
-        boarderRenderer.sortingOrder = 2;
+        boarderRenderer.sortingOrder = sortingMax;
         float coverHeight = 5 - size * tileSize / 2;
         GameObject cover = Instantiate(square, new Vector3(0, (size * tileSize + coverHeight) / 2), Quaternion.identity, topCover.transform);
         cover.transform.localScale = new Vector3(12, coverHeight);
         SpriteRenderer coverRenderer = cover.GetComponent<SpriteRenderer>();
         coverRenderer.color = coverColour;
-        coverRenderer.sortingOrder = 1;
+        coverRenderer.sortingOrder = sortingMax - 1;
         boarder.name = "Boarder";
         cover.name = "Cover";
     }
@@ -101,13 +104,13 @@ public class GameGrid : MonoBehaviour
         boarder.transform.localScale = new Vector3(boarderWidth, size * tileSize + boarderWidth * 2);
         SpriteRenderer boarderRenderer = boarder.GetComponent<SpriteRenderer>();
         boarderRenderer.color = borderColour;
-        boarderRenderer.sortingOrder = 2;
+        boarderRenderer.sortingOrder = sortingMax;
         float coverWidth = 11 - size * tileSize / 2;
         GameObject cover = Instantiate(square, new Vector3((size * tileSize + coverWidth) / 2, 0), Quaternion.identity, rightCover.transform);
         cover.transform.localScale = new Vector3(coverWidth, 10);
         SpriteRenderer coverRenderer = cover.GetComponent<SpriteRenderer>();
         coverRenderer.color = coverColour;
-        coverRenderer.sortingOrder = 1;
+        coverRenderer.sortingOrder = sortingMax - 1;
         boarder.name = "Boarder";
         cover.name = "Cover";
     }
@@ -119,13 +122,13 @@ public class GameGrid : MonoBehaviour
         boarder.transform.localScale = new Vector3(size * tileSize + boarderWidth * 2, boarderWidth);
         SpriteRenderer boarderRenderer = boarder.GetComponent<SpriteRenderer>();
         boarderRenderer.color = borderColour;
-        boarderRenderer.sortingOrder = 2;
+        boarderRenderer.sortingOrder = sortingMax;
         float coverHeight = 5 - size * tileSize / 2;
         GameObject cover = Instantiate(square, new Vector3(0, -(size * tileSize + coverHeight)/2), Quaternion.identity, bottomCover.transform);
         cover.transform.localScale = new Vector3(12, coverHeight);
         SpriteRenderer coverRenderer = cover.GetComponent<SpriteRenderer>();
         coverRenderer.color = coverColour;
-        coverRenderer.sortingOrder = 1;
+        coverRenderer.sortingOrder = sortingMax - 1;
         boarder.name = "Boarder";
         cover.name = "Cover";
     }
@@ -137,13 +140,13 @@ public class GameGrid : MonoBehaviour
         boarder.transform.localScale = new Vector3(boarderWidth, size * tileSize + boarderWidth * 2);
         SpriteRenderer boarderRenderer = boarder.GetComponent<SpriteRenderer>();
         boarderRenderer.color = borderColour;
-        boarderRenderer.sortingOrder = 2;
+        boarderRenderer.sortingOrder = sortingMax;
         float coverWidth = 11 - size * tileSize / 2;
         GameObject cover = Instantiate(square, new Vector3(-(size * tileSize + coverWidth) / 2, 0), Quaternion.identity, leftCover.transform);
         cover.transform.localScale = new Vector3(coverWidth, 10);
         SpriteRenderer coverRenderer = cover.GetComponent<SpriteRenderer>();
         coverRenderer.color = coverColour;
-        coverRenderer.sortingOrder = 1;
+        coverRenderer.sortingOrder = sortingMax - 1;
         boarder.name = "Boarder";
         cover.name = "Cover";
     }
@@ -158,5 +161,41 @@ public class GameGrid : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Vector2 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition) / (tileSize);
+        int mouseX = Mathf.RoundToInt(mouse.x);
+        int mouseY = Mathf.RoundToInt(mouse.y);
+        if (highlights.transform.childCount < 2)
+        {
+            GameObject rowHighlight = Instantiate(square, new Vector2(0, mouseY * tileSize), Quaternion.identity, highlights.transform);
+            rowHighlight.name = "Row Highlight";
+            SpriteRenderer renderer = rowHighlight.GetComponent<SpriteRenderer>();
+            renderer.color = highlightColour;
+            renderer.sortingOrder = sortingMax - 2;
+            rowHighlight.transform.localScale = new Vector3(size * tileSize, tileSize, 1);
+        }
+        else
+        {
+            Transform rowTransform = highlights.transform.GetChild(0);
+            rowTransform.localPosition = new Vector2(0, (mouseY) * tileSize);
+        }
+
+        if (highlights.transform.childCount < 2)
+        {
+            GameObject columnHighlight = Instantiate(square, new Vector2(mouseX * tileSize, 0), Quaternion.identity, highlights.transform);
+            columnHighlight.name = "Column Highlight";
+            SpriteRenderer renderer = columnHighlight.GetComponent<SpriteRenderer>();
+            renderer.color = highlightColour;
+            renderer.sortingOrder = sortingMax - 2;
+            columnHighlight.transform.localScale = new Vector3(tileSize, size * tileSize, 1);
+        }
+        else
+        {
+            Transform rowTransform = highlights.transform.GetChild(1);
+            rowTransform.localPosition = new Vector2(mouseX * tileSize, 0);
+        }
+
+
+
     }
+    
 }

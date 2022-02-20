@@ -204,7 +204,6 @@ public class GridData
             }
         }
         this.size = size;
-        
     }
 
     public void GenerateGrid()
