@@ -25,7 +25,6 @@ public class GameGrid : MonoBehaviour
     private GameObject highlights;
     private float time;
     private Vector2 originalMousePosition;
-    private Vector2 lastMousePosition;
     private string directionLock = "";
     private List<List<GameObject>> rows;
     private List<List<GameObject>> columns;
@@ -248,26 +247,24 @@ public class GameGrid : MonoBehaviour
         {
             if (directionLock.Equals("Horizontal"))
             {
-                mouseY = Mathf.RoundToInt(originalMousePosition.y);
+                mouseY = size % 2 == 0 ? Mathf.FloorToInt(originalMousePosition.y) : Mathf.RoundToInt(originalMousePosition.y);
                 bool inverse = Mathf.Sign(originalMousePosition.x - mouse.x) > 0;
-                for (int i = inverse ? rows[mouseY].Count - 1 : 0; inverse ? i >= 0 : i < rows[mouseY].Count; i += inverse? -1: 1) 
+                int rowIndex = mouseY + size / 2;
+                for (int i = inverse ? rows[rowIndex].Count - 1 : 0; inverse ? i >= 0 : i < rows[rowIndex].Count; i += inverse? -1: 1) 
                 {
-                    Tile t = rows[mouseY][i].GetComponent<Tile>();
+                    Tile t = rows[rowIndex][i].GetComponent<Tile>();
                     t.FinalisePosition("Horizontal", rows, columns);
-                }
-                foreach(GameObject g in rows[mouseY])
-                {
-                    Tile t = g.GetComponent<Tile>();
-                    //t.FinalisePosition("Horizontal");
                 }
             }
             if (directionLock.Equals("Vertical"))
             {
-                mouseX = Mathf.RoundToInt(originalMousePosition.x);
-                foreach (GameObject g in columns[mouseX])
+                mouseX = size % 2 == 0 ? Mathf.FloorToInt(originalMousePosition.x) : Mathf.RoundToInt(originalMousePosition.x);
+                bool inverse = Mathf.Sign(originalMousePosition.y - mouse.y) > 0;
+                int colIndex = mouseX + size / 2;
+                for (int i = inverse ? columns[colIndex].Count - 1 : 0; inverse ? i >= 0 : i < columns[colIndex].Count; i += inverse ? -1 : 1)
                 {
-                    Tile t = g.GetComponent<Tile>();
-                    //t.FinalisePosition("Vertical");
+                    Tile t = columns[colIndex][i].GetComponent<Tile>();
+                    t.FinalisePosition("Vertical", rows, columns);
                 }
             }
             directionLock = "";
@@ -294,9 +291,9 @@ public class GameGrid : MonoBehaviour
             }
             if (directionLock.Equals("Horizontal"))
             {
-                mouseX = Mathf.RoundToInt(originalMousePosition.x);
-                mouseY = Mathf.RoundToInt(originalMousePosition.y);
-                foreach(GameObject g in rows[mouseY])
+                mouseX = size % 2 == 0 ? Mathf.FloorToInt(originalMousePosition.x) : Mathf.RoundToInt(originalMousePosition.x);
+                mouseY = size % 2 == 0 ? Mathf.FloorToInt(originalMousePosition.y) : Mathf.RoundToInt(originalMousePosition.y);
+                foreach(GameObject g in rows[mouseY + size / 2])
                 {
                     Tile t = g.GetComponent<Tile>();
                     t.Move(new Vector2(deltaX, 0));
@@ -304,19 +301,18 @@ public class GameGrid : MonoBehaviour
             }
             if (directionLock.Equals("Vertical"))
             {
-                mouseX = Mathf.RoundToInt(originalMousePosition.x);
-                mouseY = Mathf.RoundToInt(originalMousePosition.y);
-                for (int i = 0; i < columns[mouseX].Count; i++)
+                mouseX = size % 2 == 0 ? Mathf.FloorToInt(originalMousePosition.x) : Mathf.RoundToInt(originalMousePosition.x);
+                mouseY = size % 2 == 0 ? Mathf.FloorToInt(originalMousePosition.y) : Mathf.RoundToInt(originalMousePosition.y);
+                foreach (GameObject g in columns[mouseX + size / 2])
                 {
-                    columns[mouseX][i].transform.Translate(new Vector3(0, mouse.y - lastMousePosition.y, 0));
+                    Tile t = g.GetComponent<Tile>();
+                    t.Move(new Vector2(0, deltaY));
                 }
-                lastMousePosition = new Vector2(mouse.x, mouse.y);
             }
         }
         if (Input.GetMouseButtonDown(0))
         {
             originalMousePosition = new Vector2(mouse.x, mouse.y);
-            lastMousePosition = new Vector2(mouse.x, mouse.y);
         }
 
 

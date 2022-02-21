@@ -34,14 +34,14 @@ public class Tile : MonoBehaviour
     {
         if (directionLock.Equals("Horizontal"))
         {
-            transform.position = new Vector3(Mathf.Round(transform.position.x / tileSize) * tileSize, transform.position.y, 0);
+            transform.position = new Vector3(gridSize%2 == 0? (Mathf.Floor(transform.position.x / tileSize) + 0.5f) * tileSize : Mathf.Round(transform.position.x / tileSize) * tileSize, transform.position.y, 0);
             int index = (int)(transform.position.x / tileSize);
 
             
         }
         if (directionLock.Equals("Vertical"))
         {
-            transform.position = new Vector3(transform.position.x, Mathf.Round(transform.position.y / tileSize) * tileSize, 0);
+            transform.position = new Vector3(transform.position.x, gridSize % 2 == 0 ? (Mathf.Floor(transform.position.y / tileSize) + 0.5f) * tileSize : Mathf.Round(transform.position.y / tileSize) * tileSize, 0);
         }
         position = new Vector2(transform.position.x, transform.position.y);
 
