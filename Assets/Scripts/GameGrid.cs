@@ -253,8 +253,9 @@ public class GameGrid : MonoBehaviour
                 for (int i = inverse ? rows[rowIndex].Count - 1 : 0; inverse ? i >= 0 : i < rows[rowIndex].Count; i += inverse? -1: 1) 
                 {
                     Tile t = rows[rowIndex][i].GetComponent<Tile>();
-                    t.FinalisePosition("Horizontal", rows, columns);
+                    t.FinalisePosition("Horizontal", rows, columns, data.visibleRowStarts, data.visibleColumnStarts);
                 }
+                //TODO: Update data
             }
             if (directionLock.Equals("Vertical"))
             {
@@ -264,8 +265,9 @@ public class GameGrid : MonoBehaviour
                 for (int i = inverse ? columns[colIndex].Count - 1 : 0; inverse ? i >= 0 : i < columns[colIndex].Count; i += inverse ? -1 : 1)
                 {
                     Tile t = columns[colIndex][i].GetComponent<Tile>();
-                    t.FinalisePosition("Vertical", rows, columns);
+                    t.FinalisePosition("Vertical", rows, columns, data.visibleRowStarts, data.visibleColumnStarts);
                 }
+                //TODO: Update data
             }
             directionLock = "";
             originalMousePosition = new Vector2(1000, 1000);

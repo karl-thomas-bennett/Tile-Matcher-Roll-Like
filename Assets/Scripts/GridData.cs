@@ -8,8 +8,8 @@ public class GridData
     public List<List<int>> rows;
     public List<List<int>> square;
     private int poolSize;
-    private List<int> visibleColumnStarts;
-    private List<int> visibleRowStarts;
+    public List<int> visibleColumnStarts;
+    public List<int> visibleRowStarts;
     private int size = -1;
     private int buffer;
     private Transform parent;
@@ -26,6 +26,19 @@ public class GridData
         SetGridSize(size);
         GenerateGrid();
         RemoveMatches();
+    }
+
+    public void UpdateGrid(List<List<int>> rows, List<List<int>> columns, List<int> visibleRowStarts, List<int> visibleColumnStarts)
+    {
+        this.rows = rows;
+        this.columns = columns;
+        this.visibleRowStarts = visibleRowStarts;
+        this.visibleColumnStarts = visibleColumnStarts;
+        //Update square
+        //Clear matches
+        //Move tiles down into gaps
+        //Generate new tiles
+        
     }
 
 

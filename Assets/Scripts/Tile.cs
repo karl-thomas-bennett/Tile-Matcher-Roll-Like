@@ -30,18 +30,29 @@ public class Tile : MonoBehaviour
         
     }
 
-    public void FinalisePosition(string directionLock, List<List<GameObject>> rows, List<List<GameObject>> columns)
+    public void FinalisePosition(string directionLock, List<List<GameObject>> rows, List<List<GameObject>> columns, List<int> visibleRowStarts, List<int> visibleColumnStarts)
     {
         if (directionLock.Equals("Horizontal"))
         {
             transform.position = new Vector3(gridSize%2 == 0? (Mathf.Floor(transform.position.x / tileSize) + 0.5f) * tileSize : Mathf.Round(transform.position.x / tileSize) * tileSize, transform.position.y, 0);
-            int index = (int)(transform.position.x / tileSize);
-
+            int colIndex = (int)(transform.position.x / tileSize) + gridSize/2;
+            int rowIndex = (int)(transform.position.y / tileSize) + gridSize / 2;
+            if(colIndex >= 0 && colIndex < gridSize)
+            {
+                columns[colIndex][rowIndex + visibleColumnStarts[colIndex]] = gameObject;
+            }
+            
             
         }
         if (directionLock.Equals("Vertical"))
         {
             transform.position = new Vector3(transform.position.x, gridSize % 2 == 0 ? (Mathf.Floor(transform.position.y / tileSize) + 0.5f) * tileSize : Mathf.Round(transform.position.y / tileSize) * tileSize, 0);
+            int colIndex = (int)(transform.position.x / tileSize) + gridSize / 2;
+            int rowIndex = (int)(transform.position.y / tileSize) + gridSize / 2;
+            if (rowIndex >= 0 && rowIndex < gridSize)
+            {
+                rows[rowIndex][colIndex + visibleRowStarts[rowIndex]] = gameObject;
+            }
         }
         position = new Vector2(transform.position.x, transform.position.y);
 
